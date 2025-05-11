@@ -1,0 +1,21 @@
+{
+  "name": "soma-server",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "packageManager": "npm@10.9.2",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "dotenv -e ~/.important/soma.env -- turbo run dev",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "test": "turbo run test"
+  },
+  "author": "zhen",
+  "devDependencies": {
+    "turbo": "^2.5.3"
+  }
+}

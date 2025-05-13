@@ -10,7 +10,17 @@
     "GATEWAY_API_KEY",
     "SERVICE_STUDY_URL",
     "SERVICE_AI_URL",
-    "SERVICE_SYSTEM_URL"
+    "SERVICE_SYSTEM_URL",
+    "EMAIL_HOST",
+    "EMAIL_PORT",
+    "EMAIL_SECURE",
+    "EMAIL_USER",
+    "EMAIL_PASSWORD",
+    "JWT_SECRET",
+    "JWT_REFRESH_SECRET",
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "GOOGLE_REDIRECT_URI"
   ],
   "tasks": {
     "build": {

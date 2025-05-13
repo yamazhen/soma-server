@@ -1,5 +1,6 @@
 import { type Express } from "express";
 import userRoutes from "./userRoutes.js";
+import oAuthRoutes from "./oAuthRoutes.js";
 
 export const setupRoutes = (app: Express): void => {
   app.get("/api/health", (_req, res) => {
@@ -11,4 +12,5 @@ export const setupRoutes = (app: Express): void => {
   });
 
   app.use(userRoutes);
+  app.use(oAuthRoutes);
 };

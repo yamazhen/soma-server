@@ -1,39 +1,95 @@
-import { type Request, type Response, type NextFunction } from "express";
+import {
+  type Request,
+  type Response,
+  type NextFunction,
+  type ErrorRequestHandler,
+} from "express";
+import jwt, { type JwtPayload } from "jsonwebtoken";
+import {
+  ErrorTypes,
+  ForbiddenError,
+  NotFoundError,
+  UnauthorizedError,
+} from "./utils.js";
 
-export const errorHandler = (
-  err: Error & { status?: number },
-  req: Request,
-  res: Response,
-  _next: NextFunction,
-) => {
+export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
+  if (process.env["NODE_ENV"] === "development")
+    console.error(`[ERROR] ${req.method} ${req.path}:`, err);
+
+  if (err instanceof ErrorTypes) {
+    return res.status(err.status).json({
+      success: false,
+      error: err.message,
+    });
+  }
+
   const status = err.status || 500;
-  const message = err.message || "Internal Server Error";
+  const message = status === 500 ? "Internal server error" : err.message;
 
-  console.error(`[ERROR] ${req.method} ${req.path}:`, err);
-  res.status(status).json({ status, message });
+  return res.status(status).json({
+    success: false,
+    error: message,
+  });
 };
 
-export const notFoundHandler = (req: Request, res: Response) => {
-  res.status(404).json({
-    status: 404,
-    message: `Route not found: ${req.method} ${req.path}`,
-  });
+export const notFoundHandler = (
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+) => {
+  next(new NotFoundError(`Route not found: [${req.method}] ${req.path}`));
 };
 
 export const gatewayAuthMiddleware = (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction,
 ): void => {
   const apiKey = req.headers["x-api-key"];
 
   if (!apiKey || apiKey !== process.env["GATEWAY_API_KEY"]) {
-    res.status(401).json({
-      error: "Unauthorized",
-      message: "Direct access to this service is not allowed",
-    });
-    return;
+    return next(
+      new UnauthorizedError("Direct access to this service is not allowed"),
+    );
   }
 
   next();
+};
+
+export const authenticateToken = (
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) {
+    return next(new UnauthorizedError("Access token required"));
+  }
+
+  jwt.verify(token, process.env["JWT_SECRET"]!, (err, decoded) => {
+    if (err) {
+      return next(new ForbiddenError("Invalid or expired token"));
+    }
+
+    if (
+      decoded &&
+      typeof decoded === "object" &&
+      "id" in decoded &&
+      "username" in decoded &&
+      "email" in decoded
+    ) {
+      const jwtPayload = decoded as JwtPayload;
+      req.user = {
+        id: jwtPayload["id"],
+        username: jwtPayload["username"],
+        email: jwtPayload["email"],
+      } as any;
+      next();
+      return;
+    } else {
+      return next(new ForbiddenError("Invalid token payload"));
+    }
+  });
 };

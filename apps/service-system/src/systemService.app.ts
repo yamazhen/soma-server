@@ -11,11 +11,7 @@ const app = express();
 
 app.use(cors());
 app.use(gatewayAuthMiddleware);
-app.use(
-  express.json({
-    limit: "10mb",
-  }),
-);
+app.use(express.json());
 
 setupRoutes(app);
 

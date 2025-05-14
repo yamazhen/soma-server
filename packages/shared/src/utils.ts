@@ -4,6 +4,8 @@ import type {
   RouteOptions,
   SuccessResponseOptions,
 } from "./types/typesExport.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 export class ErrorTypes extends Error {
   status: number;
@@ -101,4 +103,9 @@ export const handleRoute = <T = any>(
       });
     }
   });
+};
+
+export const findRelativePath = (relativePath: string) => {
+  const absolutePath = path.join(process.cwd(), relativePath);
+  return path.resolve(absolutePath);
 };

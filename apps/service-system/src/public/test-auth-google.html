@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Google Auth Tester</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body>
+    <h1>Google Auth Token Generator</h1>
+
+    <div
+      id="g_id_onload"
+      data-client_id=""
+      data-callback="handleCredentialResponse"
+      data-auto_prompt="false"
+    ></div>
+
+    <div
+      class="g_id_signin"
+      data-type="standard"
+      data-size="large"
+      data-theme="outline"
+      data-text="sign_in_with"
+    ></div>
+
+    <div id="result" style="margin-top: 20px">
+      <h3>Token will appear here after login:</h3>
+      <textarea
+        id="token"
+        rows="10"
+        cols="80"
+        readonly
+        style="font-family: monospace; font-size: 12px"
+      ></textarea>
+      <br /><br />
+      <button onclick="copyToken()" style="padding: 10px">Copy Token</button>
+      <button onclick="testAPI()" style="padding: 10px">Test API</button>
+    </div>
+
+    <div id="api-result" style="margin-top: 20px"></div>
+
+    <script>
+      let currentToken = "";
+
+      function handleCredentialResponse(response) {
+        currentToken = response.credential;
+        document.getElementById("token").value = currentToken;
+        console.log("ID Token:", currentToken);
+      }
+
+      function copyToken() {
+        navigator.clipboard.writeText(currentToken);
+        alert("Token copied to clipboard!");
+      }
+
+      async function testAPI() {
+        if (!currentToken) {
+          alert("Please sign in first!");
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            "http://localhost:3000/api/system/v1/users/auth/google",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                idToken: currentToken,
+              }),
+            },
+          );
+
+          const data = await response.json();
+          document.getElementById("api-result").innerHTML =
+            "<h3>API Response:</h3><pre>" +
+            JSON.stringify(data, null, 2) +
+            "</pre>";
+        } catch (error) {
+          document.getElementById("api-result").innerHTML =
+            "<h3>Error:</h3><pre>" + error.message + "</pre>";
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -3,8 +3,6 @@ import {
   InternalServerError,
   NotFoundError,
   UnauthorizedError,
-  type AppleLoginRequest,
-  type AppleUserInfo,
   type AuthResponse,
   type GoogleUserInfo,
   type SocialUser,
@@ -15,9 +13,8 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../controllers/userController.js";
-import appleSignin from "apple-signin-auth";
 
-export class SocialAuthService {
+export class AuthService {
   private googleClient: OAuth2Client;
 
   constructor() {
@@ -36,38 +33,6 @@ export class SocialAuthService {
     } catch (e) {
       throw new UnauthorizedError("Invalid google token");
     }
-  }
-
-  async handleAppleLogin(data: AppleLoginRequest): Promise<AuthResponse> {
-    try {
-      const appleUser = await this.verifyAppleToken(data.idToken);
-
-      if (data.user?.name) {
-        appleUser.name = `${data.user.name.firstName} ${data.user.name.lastName}`;
-      }
-
-      const user = await this.findOrCreateSocialUser("apple", appleUser);
-      return this.generateAuthResponse(user);
-    } catch (error) {
-      throw new UnauthorizedError("Invalid apple token");
-    }
-  }
-
-  private async verifyAppleToken(idToken: string): Promise<AppleUserInfo> {
-    const payload = await appleSignin.verifyIdToken(idToken, {
-      audience: process.env["APPLE_CLIENT_ID"]!,
-      ignoreExpiration: false,
-    });
-
-    const emailVerified =
-      payload.email_verified === true || payload.email_verified === "true";
-
-    return {
-      appleId: payload.sub,
-      email: payload.email,
-      emailVerified: emailVerified,
-      name: undefined,
-    };
   }
 
   private async verifyGoogleToken(idToken: string): Promise<GoogleUserInfo> {
@@ -102,15 +67,19 @@ export class SocialAuthService {
     };
   }
 
+  // alot of functions heere are commented for future expansion
   private async findOrCreateSocialUser(
-    provider: "google" | "apple",
-    userData: GoogleUserInfo | AppleUserInfo,
+    provider: "google",
+    userData: GoogleUserInfo,
   ): Promise<SocialUser> {
     const socialIdColumn = `${provider}_id`;
+    const socialId = (userData as GoogleUserInfo).googleId;
+
+    /* example for how to set up the socialId depending on the provider
     const socialId =
       provider === "google"
         ? (userData as GoogleUserInfo).googleId
-        : (userData as AppleUserInfo).appleId;
+        : (userData as AppleUserInfo).appleId; */
 
     const result: QueryResult<SocialUser> = await Database.query(
       `SELECT * FROM users WHERE email = $1 OR ${socialIdColumn} = $2`,
@@ -125,18 +94,26 @@ export class SocialAuthService {
       }
 
       const needsLinking =
+        !existingUser.google_id && existingUser.email === userData.email;
+      /* example for how to check if the socialId needs linking depending on the provider
+      const needsLinking =
         provider === "google"
           ? !existingUser.google_id && existingUser.email == userData.email
           : !existingUser.apple_id && existingUser.email == userData.email;
+      */
 
       if (needsLinking) {
         await this.linkSocialAccount(existingUser.id, provider, socialId);
 
-        if (provider === "google") {
-          existingUser.google_id = socialId;
-        } else {
-          existingUser.apple_id = socialId;
-        }
+        /* example for how to set the socialId depending on the provider
+        switch (provider) {
+          case "google":
+            existingUser.google_id = socialId;
+            break;
+          case "apple":
+            existingUser.apple_id = socialId;
+            break;
+        } */
       }
 
       return existingUser as SocialUser;
@@ -147,10 +124,10 @@ export class SocialAuthService {
       provider === "google" ? (userData as GoogleUserInfo).picture : undefined;
 
     const createResult: QueryResult<SocialUser> = await Database.query(
-      `INSERT INTO users (username, email, ${socialIdColumn}, is_verified, profile_picture, social_provider) 
-       VALUES ($1, $2, $3, true, $4, $5) 
+      `INSERT INTO users (username, email, ${socialIdColumn}, is_verified, profile_picture) 
+       VALUES ($1, $2, $3, true, $4) 
        RETURNING *`,
-      [username, userData.email, socialId, picture, provider],
+      [username, userData.email, socialId, picture],
     );
 
     const newUser = createResult.rows[0];
@@ -163,13 +140,13 @@ export class SocialAuthService {
 
   private async linkSocialAccount(
     userId: number,
-    provider: "google" | "apple",
+    provider: "google",
     socialId: string,
   ): Promise<void> {
     const socialIdColumn = `${provider}_id`;
     await Database.query(
-      `UPDATE users SET ${socialIdColumn} = $1, social_provider = $2 WHERE id = $3`,
-      [socialId, provider, userId],
+      `UPDATE users SET ${socialIdColumn} = $1 WHERE id = $2`,
+      [socialId, userId],
     );
   }
 

@@ -12,6 +12,8 @@ export const UserSchema: ModelSchema = {
     is_verified: "boolean NOT NULL DEFAULT false",
     verification_code: "varchar(6)",
     verification_code_expiry: "timestamp",
+    google_id: "varchar(255)",
+    apple_id: "varchar(255)",
     last_login: "timestamp",
     create_date: "timestamp NOT NULL DEFAULT NOW()",
     update_date: "timestamp NOT NULL DEFAULT NOW()",

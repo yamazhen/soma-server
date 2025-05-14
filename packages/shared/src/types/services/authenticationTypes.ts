@@ -6,7 +6,7 @@ export interface JWTPayload {
   email: string;
 }
 
-// Google Auth Types
+// google auth types
 export interface GoogleUserInfo {
   googleId: string;
   email: string;
@@ -35,51 +35,19 @@ export interface GoogleTokenPayload {
   iat: number;
   exp: number;
   jti?: string;
-  hd?: string; // Hosted domain (for G Suite accounts)
+  hd?: string;
 }
 
-// Apple Auth Types
-export interface AppleUserInfo {
-  appleId: string;
-  email: string;
-  name?: string | undefined;
-  emailVerified: boolean;
-}
-
-export interface AppleLoginRequest {
-  idToken: string;
-  authorizationCode?: string;
-  user?: {
-    name?: {
-      firstName: string;
-      lastName: string;
-    };
-    email: string;
-  };
-}
-
-export interface AppleTokenPayload {
-  iss: string;
-  sub: string;
-  aud: string;
-  iat: number;
-  exp: number;
-  nonce?: string;
-  nonce_supported?: boolean;
-  email: string;
-  email_verified: boolean;
-  is_private_email?: boolean;
-  real_user_status?: number;
-}
-
-// Database User Types (extending your existing User type)
+// extension of user model for social login
 export interface SocialUser extends User {
   google_id?: string | null;
+  /* can add more social login ids here like:
   apple_id?: string | null;
-  social_provider?: "google" | "apple" | "email" | null;
+  facebook_id?: string | null;
+  twitter_id?: string | null; */
 }
 
-// Auth Response Types
+// auth response types
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
@@ -95,17 +63,16 @@ export interface AuthResponse {
   tokens: AuthTokens;
 }
 
-// Service Method Types
+// service method types
 export interface AuthService {
   handleGoogleLogin(idToken: string): Promise<AuthResponse>;
-  handleAppleLogin(data: AppleLoginRequest): Promise<AuthResponse>;
   findOrCreateSocialUser(
-    provider: "google" | "apple",
-    userData: GoogleUserInfo | AppleUserInfo,
+    provider: "google",
+    userData: GoogleUserInfo,
   ): Promise<SocialUser>;
   linkSocialAccount(
     userId: number,
-    provider: "google" | "apple",
+    provider: "google",
     socialId: string,
   ): Promise<void>;
 }
@@ -126,13 +93,6 @@ export interface OAuthConfig {
     clientSecret: string;
     redirectUri: string;
   };
-  apple: {
-    clientId: string;
-    teamId: string;
-    keyId: string;
-    privateKey: string;
-    redirectUri: string;
-  };
 }
 
 // Token Verification Types
@@ -145,7 +105,6 @@ export interface SocialUserWithIndex extends SocialUser {
 }
 
 export type GoogleTokenVerifier = TokenVerifier<GoogleTokenPayload>;
-export type AppleTokenVerifier = TokenVerifier<AppleTokenPayload>;
 
 declare global {
   namespace Express {

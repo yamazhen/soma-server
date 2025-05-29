@@ -1,1 +1,1 @@
-export * from "./responseTypes.js";
+export * from "./responseTypes";

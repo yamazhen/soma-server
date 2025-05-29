@@ -1,5 +1,5 @@
 import { serverEnv } from "@soma-ms/shared";
-import { app } from "./studyService.app.js";
+import { app } from "./studyService.app";
 
 export async function startServer() {
 	const PORT = Number.parseInt(serverEnv.SERVICE_STUDY_PORT);

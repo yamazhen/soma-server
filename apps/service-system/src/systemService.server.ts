@@ -1,7 +1,7 @@
 import { Database, initSchema, serverEnv } from "@soma-ms/shared";
-import { app } from "./systemService.app.js";
-import { schemas } from "./models/systemModelsExport.js";
-import { emailService } from "./services/emailService.js";
+import { app } from "./systemService.app";
+import { schemas } from "./models/systemModelsExport";
+import { emailService } from "./services/emailService";
 
 export async function startServer() {
 	Database.init("soma-system");

@@ -20,10 +20,10 @@ import type { QueryResult } from "pg";
 import {
 	createEmailChangeVerificationTemplate,
 	createVerificationEmailTemplate,
-} from "../utils/emailTemplates.js";
-import { emailService } from "../services/emailService.js";
+} from "../utils/emailTemplates";
+import { emailService } from "../services/emailService";
 import jwt from "jsonwebtoken";
-import { TOKEN_CONSTANTS } from "../constants/tokenConstants.js";
+import { TOKEN_CONSTANTS } from "../constants/tokenConstants";
 
 const SALT_ROUNDS = 10;
 const VERIFICATION_CODE_EXPIRY_MINUTES = 10;

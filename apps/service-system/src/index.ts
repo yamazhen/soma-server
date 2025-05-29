@@ -1,6 +1,6 @@
-import { startServer } from "./systemService.server.js";
+import { startServer } from "./systemService.server";
 
 startServer().catch((err) => {
-  console.error("Failed to start System Service:", err);
-  process.exit(1);
+	console.error("Failed to start System Service:", err);
+	process.exit(1);
 });

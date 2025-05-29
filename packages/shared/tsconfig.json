@@ -2,7 +2,8 @@
   "extends": "@soma-ms/tsconfig/node.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "composite": true
   },
   "include": [
     "src/**/*"

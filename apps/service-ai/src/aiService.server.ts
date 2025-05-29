@@ -1,5 +1,5 @@
 import { serverEnv } from "@soma-ms/shared";
-import { app } from "./aiService.app.js";
+import { app } from "./aiService.app";
 
 export async function startServer() {
 	try {

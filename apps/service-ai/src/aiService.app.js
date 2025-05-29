@@ -1,0 +1,24 @@
+import express from "express";
+import cors from "cors";
+import { errorHandler, gatewayAuthMiddleware, notFoundHandler, } from "@soma-ms/shared";
+const app = express();
+app.use(cors());
+app.use(gatewayAuthMiddleware);
+app.use(express.json());
+// create a setup route function later in another file
+// setupRoutes(app);
+// temporary routes
+app.get("/api/health", (_req, res) => {
+    res.json({
+        status: "healthy",
+        service: "service-ai",
+        uptime: process.uptime(),
+    });
+});
+app.get("/api/ai", (_req, res) => {
+    res.json({ message: "Hello from AI Service!" });
+});
+app.use(notFoundHandler);
+app.use(errorHandler);
+export { app };
+//# sourceMappingURL=aiService.app.js.map

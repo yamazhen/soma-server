@@ -1,9 +1,9 @@
-import { OAuthStateSchema } from "./OAuthState.js";
-import { RefreshTokenSchema } from "./RefreshToken.js";
-import { UserSchema } from "./User.js";
+import { OAuthStateSchema } from "./OAuthState";
+import { RefreshTokenSchema } from "./RefreshToken";
+import { UserSchema } from "./User";
 
-export * from "./User.js";
-export * from "./RefreshToken.js";
-export * from "./OAuthState.js";
+export * from "./User";
+export * from "./RefreshToken";
+export * from "./OAuthState";
 
 export const schemas = [UserSchema, RefreshTokenSchema, OAuthStateSchema];

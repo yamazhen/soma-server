@@ -12,12 +12,9 @@
 		"declaration": true,
 		"declarationMap": true,
 		"sourceMap": true,
-		"outDir": "./dist",
-		"rootDir": "./src",
 
-		"composite": true,
 		"incremental": true,
-		"tsBuildInfoFile": "./dist/.tsbuildinfo",
+		"skipLibCheck": true,
 
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
@@ -30,14 +27,7 @@
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
 		"isolatedModules": true,
-
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"baseUrl": ".",
-		"paths": {
-			"@soma-ms/shared": ["../shared/src/index.ts"],
-			"@soma-ms/shared/*": ["../shared/src/*"]
-		}
+		"forceConsistentCasingInFileNames": true
 	},
 	"exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
 }

@@ -1,0 +1,58 @@
+import jwt from "jsonwebtoken";
+import { ErrorTypes, ForbiddenError, NotFoundError, UnauthorizedError, } from "./utils.js";
+export const errorHandler = (err, req, res, _next) => {
+    if (process.env["NODE_ENV"] === "development")
+        console.error(`[ERROR] ${req.method} ${req.path}:`, err);
+    if (err instanceof ErrorTypes) {
+        return res.status(err.status).json({
+            success: false,
+            error: err.message,
+        });
+    }
+    const status = err.status || 500;
+    const message = status === 500 ? "Internal server error" : err.message;
+    return res.status(status).json({
+        success: false,
+        error: message,
+    });
+};
+export const notFoundHandler = (req, _res, next) => {
+    next(new NotFoundError(`Route not found: [${req.method}] ${req.path}`));
+};
+export const gatewayAuthMiddleware = (req, _res, next) => {
+    const apiKey = req.headers["x-api-key"];
+    if (!apiKey || apiKey !== process.env["GATEWAY_API_KEY"]) {
+        return next(new UnauthorizedError("Direct access to this service is not allowed"));
+    }
+    next();
+};
+export const authenticateToken = (req, _res, next) => {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+    if (!token) {
+        return next(new UnauthorizedError("Access token required"));
+    }
+    jwt.verify(token, process.env["JWT_SECRET"], (err, decoded) => {
+        if (err) {
+            return next(new ForbiddenError("Invalid or expired token"));
+        }
+        if (decoded &&
+            typeof decoded === "object" &&
+            "id" in decoded &&
+            "username" in decoded &&
+            "email" in decoded) {
+            const jwtPayload = decoded;
+            req.user = {
+                id: jwtPayload["id"],
+                username: jwtPayload["username"],
+                email: jwtPayload["email"],
+            };
+            next();
+            return;
+        }
+        else {
+            return next(new ForbiddenError("Invalid token payload"));
+        }
+    });
+};
+//# sourceMappingURL=middleware.js.map

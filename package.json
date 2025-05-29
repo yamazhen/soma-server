@@ -9,7 +9,9 @@
 		"dev": "dotenv -e ~/.important/soma.env -- turbo run dev",
 		"start": "turbo run start",
 		"lint": "turbo run lint",
-		"test": "turbo run test"
+		"test": "turbo run test",
+		"clean": "turbo run clean",
+		"typecheck": "turbo run typecheck"
 	},
 	"author": "zhen",
 	"devDependencies": {

@@ -1,0 +1,20 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/shared"
+    },
+    {
+      "path": "./apps/api-gateway"
+    },
+    {
+      "path": "./apps/service-system"
+    },
+    {
+      "path": "./apps/service-study"
+    },
+    {
+      "path": "./apps/service-ai"
+    }
+  ]
+}

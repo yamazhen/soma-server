@@ -1,12 +1,17 @@
 {
 	"$schema": "https://turbo.build/schema.json",
 	"globalEnv": [
+		"NODE_ENV",
 		"PGHOST",
 		"PGPORT",
 		"PGUSER",
 		"PGPASSWORD",
 		"PGDATABASE",
 		"INIT_SCHEMA",
+		"API_GATEWAY_PORT",
+		"SERVICE_SYSTEM_PORT",
+		"SERVICE_STUDY_PORT",
+		"SERVICE_AI_PORT",
 		"GATEWAY_API_KEY",
 		"SERVICE_STUDY_URL",
 		"SERVICE_AI_URL",
@@ -21,16 +26,17 @@
 		"GOOGLE_CLIENT_ID",
 		"GOOGLE_CLIENT_SECRET",
 		"GOOGLE_REDIRECT_URI",
-		"NODE_ENV",
 		"SESSION_SECRET",
 		"MEMCACHE_URL"
 	],
 	"tasks": {
 		"build": {
 			"dependsOn": ["^build"],
-			"outputs": ["dist/**"]
+			"outputs": ["dist/**", ".turbo/**"]
 		},
-		"lint": {},
+		"lint": {
+			"dependsOn": ["^build"]
+		},
 		"dev": {
 			"cache": false,
 			"persistent": true,
@@ -40,7 +46,11 @@
 			"dependsOn": ["build"]
 		},
 		"test": {
-			"dependsOn": ["build"]
+			"dependsOn": ["build"],
+			"outputs": ["coverage/**"]
+		},
+		"clean": {
+			"cache": false
 		}
 	}
 }

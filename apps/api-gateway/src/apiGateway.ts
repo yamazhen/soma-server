@@ -4,6 +4,7 @@ import Fastify from "fastify";
 import { configureErrorHandling } from "./apiErrorHandling";
 import { registerRoutes } from "./apiRoutes";
 import { registerProxies } from "./apiProxies";
+import { serverEnv } from "@soma-ms/shared";
 
 export class ApiGateway {
 	private app: FastifyInstance;
@@ -22,10 +23,12 @@ export class ApiGateway {
 		return this;
 	}
 
-	async start(options = { port: 3000, host: "localhost" }) {
+	async start(options?: { port?: number; host?: string }) {
+		const port = options?.port || Number.parseInt(serverEnv.API_GATEWAY_PORT);
+		const host = options?.host || "localhost";
 		try {
-			await this.app.listen(options);
-			this.app.log.info(`API Gateway running on port ${options.port}`);
+			await this.app.listen({ port, host });
+			this.app.log.info(`API Gateway running on port ${port}`);
 			return this.app;
 		} catch (e) {
 			this.app.log.error(e);

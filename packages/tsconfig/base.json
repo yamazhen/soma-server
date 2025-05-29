@@ -2,15 +2,22 @@
 	"$schema": "https://json.schemastore.org/tsconfig",
 	"display": "Default Base Configuration",
 	"compilerOptions": {
-		"target": "es2022",
-		"lib": ["es2022"],
-		"module": "esnext",
+		"target": "ES2022",
+		"lib": ["ES2022"],
+		"module": "ESNext",
 		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": false,
+		"resolveJsonModule": true,
 
 		"declaration": true,
+		"declarationMap": true,
 		"sourceMap": true,
+		"outDir": "./dist",
+		"rootDir": "./src",
 
+		"composite": true,
 		"incremental": true,
+		"tsBuildInfoFile": "./dist/.tsbuildinfo",
 
 		"strict": true,
 		"noUncheckedIndexedAccess": true,
@@ -18,13 +25,19 @@
 		"exactOptionalPropertyTypes": true,
 		"noFallthroughCasesInSwitch": true,
 		"noImplicitReturns": true,
+		"noPropertyAccessFromIndexSignature": true,
 
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
 		"isolatedModules": true,
 
 		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
+		"baseUrl": ".",
+		"paths": {
+			"@soma-ms/shared": ["../shared/src/index.ts"],
+			"@soma-ms/shared/*": ["../shared/src/*"]
+		}
 	},
-	"exclude": ["node_modules", "dist"]
+	"exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
 }

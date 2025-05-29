@@ -1,4 +1,5 @@
 import type { User } from "../modelTypes.js";
+import type { Request } from "express";
 
 export interface JWTPayload {
   id: number;

@@ -5,7 +5,6 @@ import type {
   SuccessResponseOptions,
 } from "./types/typesExport.js";
 import path from "path";
-import { fileURLToPath } from "url";
 
 export class ErrorTypes extends Error {
   status: number;
@@ -70,7 +69,7 @@ export const successResponse = (
   if (options.message) response.message = options.message;
   if (options.meta) response.meta = options.meta;
 
-  return res.status(options.statusCode || 200).json({ response });
+  return res.status(options.statusCode || 200).json(response);
 };
 
 export const handleRoute = <T = any>(
@@ -108,4 +107,60 @@ export const handleRoute = <T = any>(
 export const findRelativePath = (relativePath: string) => {
   const absolutePath = path.join(process.cwd(), relativePath);
   return path.resolve(absolutePath);
+};
+
+export const buildUpdateQuery = (
+  tableName: string,
+  updates: Record<string, any>,
+  where: Record<string, any>,
+  options?: {
+    returning?: boolean | string[];
+    sqlFunctions?: string[];
+  },
+) => {
+  const { returning = true, sqlFunctions = [] } = options || {};
+  const updateFields: string[] = [];
+  const values: any[] = [];
+  let parameterIndex = 1;
+
+  for (const [field, value] of Object.entries(updates)) {
+    if (sqlFunctions.includes(field)) {
+      updateFields.push(`${field} = ${value}`);
+    } else {
+      if (value !== undefined) {
+        updateFields.push(`${field} = $${parameterIndex}`);
+        values.push(value);
+        parameterIndex++;
+      }
+    }
+  }
+
+  const whereConditions: string[] = [];
+  for (const [field, value] of Object.entries(where)) {
+    whereConditions.push(`${field} = $${parameterIndex}`);
+    values.push(value);
+    parameterIndex++;
+  }
+
+  let returningClause = "";
+  if (returning === true) {
+    returningClause = "RETURNING *";
+  } else if (Array.isArray(returning) && returning.length > 0) {
+    returningClause = `RETURNING ${returning.join(", ")}`;
+  }
+
+  const query = `
+UPDATE ${tableName}
+SET ${updateFields.join(", ")}
+WHERE ${whereConditions.join(" AND ")}
+${returningClause}
+`;
+
+  return { query, values };
+};
+
+export const updateFieldCheck = (updates: Record<string, any>): void => {
+  if (Object.keys(updates).length === 0) {
+    throw new BadRequestError("At least one field must be provided for update");
+  }
 };

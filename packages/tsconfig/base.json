@@ -1,42 +1,30 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
-  "display": "Default Base Configuration",
-  "compilerOptions": {
-    "target": "es2022",
-    "lib": ["es2022"],
-    "useDefineForClassFields": true,
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"display": "Default Base Configuration",
+	"compilerOptions": {
+		"target": "es2022",
+		"lib": ["es2022"],
+		"module": "esnext",
+		"moduleResolution": "bundler",
 
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "moduleDetection": "force",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "verbatimModuleSyntax": true,
+		"declaration": true,
+		"sourceMap": true,
 
-    "declaration": true,
-    "declarationMap": true,
-    "sourceMap": true,
-    "removeComments": false,
-    "preserveConstEnums": true,
-    "importHelpers": true,
+		"incremental": true,
 
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "exactOptionalPropertyTypes": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+		"exactOptionalPropertyTypes": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
 
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"isolatedModules": true,
 
-    "skipLibCheck": true,
-    "incremental": true,
-    "composite": true
-  },
-  "exclude": ["node_modules", "dist"]
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true
+	},
+	"exclude": ["node_modules", "dist"]
 }

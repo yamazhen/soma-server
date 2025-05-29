@@ -1,44 +1,46 @@
 {
-  "$schema": "https://turbo.build/schema.json",
-  "globalEnv": [
-    "PGHOST",
-    "PGPORT",
-    "PGUSER",
-    "PGPASSWORD",
-    "PGDATABASE",
-    "INIT_SCHEMA",
-    "GATEWAY_API_KEY",
-    "SERVICE_STUDY_URL",
-    "SERVICE_AI_URL",
-    "SERVICE_SYSTEM_URL",
-    "EMAIL_HOST",
-    "EMAIL_PORT",
-    "EMAIL_SECURE",
-    "EMAIL_USER",
-    "EMAIL_PASSWORD",
-    "JWT_SECRET",
-    "JWT_REFRESH_SECRET",
-    "GOOGLE_CLIENT_ID",
-    "GOOGLE_CLIENT_SECRET",
-    "GOOGLE_REDIRECT_URI",
-    "NODE_ENV"
-  ],
-  "tasks": {
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
-    },
-    "lint": {},
-    "dev": {
-      "cache": false,
-      "persistent": true,
-      "dependsOn": ["^build"]
-    },
-    "start": {
-      "dependsOn": ["build"]
-    },
-    "test": {
-      "dependsOn": ["build"]
-    }
-  }
+	"$schema": "https://turbo.build/schema.json",
+	"globalEnv": [
+		"PGHOST",
+		"PGPORT",
+		"PGUSER",
+		"PGPASSWORD",
+		"PGDATABASE",
+		"INIT_SCHEMA",
+		"GATEWAY_API_KEY",
+		"SERVICE_STUDY_URL",
+		"SERVICE_AI_URL",
+		"SERVICE_SYSTEM_URL",
+		"EMAIL_HOST",
+		"EMAIL_PORT",
+		"EMAIL_SECURE",
+		"EMAIL_USER",
+		"EMAIL_PASSWORD",
+		"JWT_SECRET",
+		"JWT_REFRESH_SECRET",
+		"GOOGLE_CLIENT_ID",
+		"GOOGLE_CLIENT_SECRET",
+		"GOOGLE_REDIRECT_URI",
+		"NODE_ENV",
+		"SESSION_SECRET",
+		"MEMCACHE_URL"
+	],
+	"tasks": {
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": ["dist/**"]
+		},
+		"lint": {},
+		"dev": {
+			"cache": false,
+			"persistent": true,
+			"dependsOn": ["^build"]
+		},
+		"start": {
+			"dependsOn": ["build"]
+		},
+		"test": {
+			"dependsOn": ["build"]
+		}
+	}
 }

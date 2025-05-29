@@ -5,6 +5,7 @@ export const UserSchema: ModelSchema = {
   columns: {
     id: "bigserial PRIMARY KEY",
     username: "varchar(50) NOT NULL UNIQUE",
+    display_name: "varchar(50)",
     email: "varchar(360) NOT NULL UNIQUE",
     password: "varchar(255)",
     profile_picture: "text",

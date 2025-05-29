@@ -1,9 +1,9 @@
-import { startGateway } from "./apiGateway.js";
+import { startGateway } from "./apiGateway";
 
 startGateway()
-  .then(() => {
-    console.log("API Gateway started successfully");
-  })
-  .catch((e) => {
-    console.error("Failed to start API Gateway", e);
-  });
+	.then(() => {
+		console.log("API Gateway started successfully");
+	})
+	.catch((e) => {
+		console.error("Failed to start API Gateway", e);
+	});

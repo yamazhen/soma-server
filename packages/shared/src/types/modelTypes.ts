@@ -1,6 +1,7 @@
 export interface User {
   id: number;
   username: string;
+  display_name?: string;
   email: string;
   password: string;
   profile_picture: string;
@@ -17,6 +18,24 @@ export interface User {
 export interface UserDto {
   username: string;
   email: string;
+  display_name?: string;
+}
+
+export interface RefreshToken {
+  id: number;
+  user_id: number;
+  token: string;
+  expires_at: Date;
+  device_info?: string;
+  create_date: Date;
+}
+
+export interface UserUpdateDto {
+  id: number;
+  username: string;
+  email: string;
+  profile_picture: string;
+  display_name: string;
 }
 
 export interface OAuthProvider {

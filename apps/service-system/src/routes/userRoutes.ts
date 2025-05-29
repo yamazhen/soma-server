@@ -110,7 +110,7 @@ router.get(
 			if (!req.params["userId"])
 				throw new BadRequestError("No user ID found in request");
 			const userId = req.params["userId"];
-			return await findUserById(parseInt(userId));
+			return await findUserById(Number.parseInt(userId));
 		},
 		{
 			message: (user: User) => `User ${user.username} found`,

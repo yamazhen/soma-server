@@ -8,8 +8,8 @@ export function configureErrorHandling(app: FastifyInstance) {
 			error: "Internal Server Error",
 			message:
 				serverEnv.NODE_ENV === "development"
-					? "An error occurred"
-					: error.message,
+					? error.message
+					: "An unexpected error occurred.",
 		});
 	});
 }

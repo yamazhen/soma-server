@@ -69,7 +69,7 @@ export const authenticateToken = (
 		return next(new UnauthorizedError("Access token required"));
 	}
 
-	jwt.verify(token, process.env["JWT_SECRET"]!, (err, decoded) => {
+	jwt.verify(token, serverEnv.JWT_SECRET, (err, decoded) => {
 		if (err) {
 			return next(new ForbiddenError("Invalid or expired token"));
 		}

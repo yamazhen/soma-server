@@ -1,6 +1,7 @@
 import {
 	BadRequestError,
 	buildUpdateQuery,
+	CacheService,
 	ConflictError,
 	Database,
 	ForbiddenError,
@@ -320,6 +321,7 @@ export const updateUserProfileByUsername = async (
 		if (!user) {
 			throw new InternalServerError("User update failed");
 		}
+		await CacheService.invalidateUser(existingUser);
 		return user;
 	} catch (e) {
 		throw e;
@@ -332,6 +334,11 @@ export const findUserById = async (userId: number) => {
 			throw new BadRequestError("User ID is required");
 		}
 
+		const cachedUser = await CacheService.getUser(userId);
+		if (cachedUser) {
+			return cachedUser;
+		}
+
 		const result: QueryResult<User> = await Database.query(
 			"SELECT * FROM users WHERE id = $1",
 			[userId],
@@ -341,6 +348,8 @@ export const findUserById = async (userId: number) => {
 		if (!user) {
 			throw new NotFoundError(`User with ID ${userId} not found`);
 		}
+
+		await CacheService.setUser(user);
 		return user;
 	} catch (e) {
 		throw e;
@@ -353,6 +362,11 @@ export const findUserByUsername = async (username: string) => {
 			throw new BadRequestError("Username is required");
 		}
 
+		const cachedUser = await CacheService.getUserByUsername(username);
+		if (cachedUser) {
+			return cachedUser;
+		}
+
 		const result: QueryResult<User> = await Database.query(
 			"SELECT * FROM users WHERE username = $1",
 			[username],
@@ -363,6 +377,7 @@ export const findUserByUsername = async (username: string) => {
 			throw new NotFoundError(`User with username ${username} not found`);
 		}
 
+		await CacheService.setUser(user);
 		return user;
 	} catch (e) {
 		throw e;
@@ -375,6 +390,11 @@ export const findUserByEmail = async (email: string) => {
 			throw new BadRequestError("Email is required");
 		}
 
+		const cachedUser = await CacheService.getUserByEmail(email);
+		if (cachedUser) {
+			return cachedUser;
+		}
+
 		const result: QueryResult<User> = await Database.query(
 			"SELECT * FROM users WHERE email = $1",
 			[email],
@@ -384,6 +404,8 @@ export const findUserByEmail = async (email: string) => {
 		if (!user) {
 			throw new NotFoundError(`User with email ${email} not found`);
 		}
+
+		await CacheService.setUser(user);
 		return user;
 	} catch (e) {
 		throw e;

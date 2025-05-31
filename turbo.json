@@ -27,7 +27,8 @@
 		"GOOGLE_CLIENT_SECRET",
 		"GOOGLE_REDIRECT_URI",
 		"SESSION_SECRET",
-		"MEMCACHE_URL"
+		"MEMCACHE_URL",
+		"GEMINI_API_KEY"
 	],
 	"tasks": {
 		"build": {

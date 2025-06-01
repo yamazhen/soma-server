@@ -1,5 +1,4 @@
-import { memcache } from "../config/cache";
-import type { User } from "../types/modelTypes";
+import { memcache, User } from "@soma-ms/shared";
 
 interface CacheConfig {
   defaultTTL: number;

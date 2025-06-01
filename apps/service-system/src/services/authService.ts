@@ -1,5 +1,4 @@
 import {
-  CacheService,
   Database,
   InternalServerError,
   NotFoundError,
@@ -16,6 +15,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../controllers/userController";
+import { CacheService } from "./cacheService";
 
 export class AuthService {
   private googleClient: OAuth2Client;

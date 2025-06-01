@@ -8,11 +8,13 @@ import path from "node:path";
 
 export class ErrorTypes extends Error {
   status: number;
+  data?: any;
 
-  constructor(message: string, status: number) {
+  constructor(message: string, status: number, data?: any) {
     super(message);
     this.name = this.constructor.name;
     this.status = status;
+    this.data = data;
   }
 }
 
@@ -35,8 +37,8 @@ export class NotFoundError extends ErrorTypes {
 }
 
 export class ForbiddenError extends ErrorTypes {
-  constructor(message: string) {
-    super(message, 403);
+  constructor(message: string, data?: any) {
+    super(message, 403, data);
   }
 }
 

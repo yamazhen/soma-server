@@ -1,7 +1,6 @@
 import {
   BadRequestError,
   buildUpdateQuery,
-  CacheService,
   ConflictError,
   Database,
   ForbiddenError,
@@ -26,6 +25,7 @@ import {
 import { emailService } from "../services/emailService";
 import jwt from "jsonwebtoken";
 import { TOKEN_CONSTANTS } from "../constants/tokenConstants";
+import { CacheService } from "../services/cacheService";
 
 interface RefreshTokenWithUser extends RefreshToken {
   username: string;
@@ -164,6 +164,56 @@ export const createUser = async (req: {
   if (!username) throw new BadRequestError("USERNAME_REQUIRED");
   if (!email) throw new BadRequestError("EMAIL_REQUIRED");
   if (!password) throw new BadRequestError("PASSWORD_REQUIRED");
+
+  try {
+    const existingUser: User = await findUserByEmail(email);
+    if (existingUser.is_verified) {
+      throw new ConflictError("USER_ALREADY_EXISTS");
+    } else {
+      const recentEmailSent = await CacheService.getRecentEmailSent(email);
+      const emailCount = await CacheService.getEmailSendCount(email);
+
+      if (emailCount >= 3) {
+        return {
+          ...existingUser,
+          requiresVerification: true,
+          rateLimited: true,
+        };
+      }
+
+      let verificationCode;
+      if (!recentEmailSent) {
+        verificationCode = generateVerificationCode();
+        await CacheService.setVerificationCode(email, verificationCode);
+
+        try {
+          const emailContent = createVerificationEmailTemplate(
+            existingUser.username,
+            verificationCode,
+          );
+
+          await emailService.sendEmail({
+            to: email,
+            ...emailContent,
+          });
+
+          await CacheService.setRecentEmailSent(email, 60);
+          await CacheService.incrementEmailSendCount(email, 3600);
+        } catch {
+          throw new InternalServerError("EMAIL_SENDING_FAILED");
+        }
+      }
+      return {
+        ...existingUser,
+        requiresVerification: true,
+        emailRecentlySent: !!recentEmailSent,
+      };
+    }
+  } catch (error) {
+    if (!(error instanceof NotFoundError)) {
+      throw error;
+    }
+  }
 
   const recentEmailSent = await CacheService.getRecentEmailSent(email);
   if (recentEmailSent) {
@@ -570,7 +620,7 @@ export const initiateLogin = async (
 ) => {
   const { usernameOrEmail, password } = req;
 
-  if (!usernameOrEmail || !!password) {
+  if (!usernameOrEmail || !password) {
     if (!usernameOrEmail && !password) {
       throw new BadRequestError("USERNAME_OR_EMAIL_AND_PASSWORD_REQUIRED");
     }
@@ -599,7 +649,7 @@ export const initiateLogin = async (
   }
 
   if (!user.is_verified) {
-    throw new ForbiddenError("VERIFY");
+    throw new ForbiddenError("VERIFY", { email: user.email });
   }
 
   if (!user.is_active) {
@@ -650,7 +700,7 @@ export const initiateLogin = async (
 
   return {
     requiresVerification: true,
-    email: user.email.replace(/(.{2})(.*)(@.*)/, "$1***$3"),
+    email: user.email,
   };
 };
 

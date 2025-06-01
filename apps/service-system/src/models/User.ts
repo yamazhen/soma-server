@@ -11,8 +11,6 @@ export const UserSchema: ModelSchema = {
     profile_picture: "text",
     is_active: "boolean NOT NULL DEFAULT true",
     is_verified: "boolean NOT NULL DEFAULT false",
-    verification_code: "varchar(6)",
-    verification_code_expiry: "timestamp",
     google_id: "varchar(255)",
     apple_id: "varchar(255)",
     last_login: "timestamp",

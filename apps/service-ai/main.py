@@ -4,14 +4,13 @@ import uvicorn
 from middleware.gatewayMiddleware import verify_gateway_key
 from utils.uptime import get_uptime_seconds, format_uptime
 from model.RequestTypes import PromptRequest, GenerateFromNote
-from model.ResponseTypes import QuizResponse
-from ai.contentGenerator import generateContent, generateQuiz
+from model.ResponseTypes import DeckResponse, QuizResponse
+from ai.contentGenerator import generateContent, generateDeck, generateQuiz
+
 
 NODE_ENV = os.environ.get("NODE_ENV")
 
-
-app = FastAPI()
-
+app = FastAPI(dependencies=[Depends(verify_gateway_key)])
 
 @app.get("/api/health")
 def healthCheck():
@@ -27,6 +26,11 @@ def prompt(request: PromptRequest):
 def generateQuizFromNote(request: GenerateFromNote) -> QuizResponse:
     quiz = generateQuiz(request.note_content, request.generated_num)
     return QuizResponse(quiz=quiz)
+
+@app.post("/api/v1/generate-from-note/deck")
+def generateDeckFromNote(request: GenerateFromNote) -> DeckResponse:
+    deck = generateDeck(request.note_content, request.generated_num)
+    return DeckResponse(deck=deck)
 
 if __name__ == "__main__":
     port = int(os.environ.get("SERVICE_AI_PORT", 3002))

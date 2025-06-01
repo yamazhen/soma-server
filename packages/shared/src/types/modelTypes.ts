@@ -1,7 +1,7 @@
 export interface User {
   id: number;
   username: string;
-  display_name?: string;
+  display_name: string;
   email: string;
   password: string;
   profile_picture: string;

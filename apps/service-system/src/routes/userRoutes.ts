@@ -18,6 +18,7 @@ import {
 import {
   authenticateToken,
   BadRequestError,
+  createImageUpload,
   getClientInfo,
   handleRoute,
   type User,
@@ -26,6 +27,8 @@ import {
 } from "@soma-ms/shared";
 
 const router = Router();
+
+const profilePictureUpload = createImageUpload();
 
 /* PUBLIC ENDPOINTS 
    PUBLIC ENDPOINTS 
@@ -199,12 +202,20 @@ router.post(
 router.post(
   "/api/v1/users/:username",
   authenticateToken,
+  profilePictureUpload.single("profilePicture"),
   handleRoute(
-    async (req) =>
-      await updateUserProfileByUsername(
+    async (req) => {
+      const updateData: any = req.body;
+
+      if (req.file) {
+        updateData.profilePictureBuffer = req.file.buffer;
+      }
+
+      return await updateUserProfileByUsername(
         req.params["username"] as string,
-        req.body,
-      ),
+        updateData,
+      );
+    },
     {
       message: (_user: UserUpdateDto, req) =>
         `User with username ${req.params["username"]}`,

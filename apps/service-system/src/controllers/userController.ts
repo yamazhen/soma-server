@@ -3,12 +3,15 @@ import {
   buildUpdateQuery,
   ConflictError,
   Database,
+  deleteImageFromCloudinary,
+  extractPublicIdFromUrl,
   ForbiddenError,
   InternalServerError,
   NotFoundError,
   serverEnv,
   UnauthorizedError,
   updateFieldCheck,
+  uploadImageToCloudinary,
   type RefreshToken,
   type User,
   type UserDto,
@@ -383,7 +386,7 @@ export const updateUserProfileByUsername = async (
   username: string,
   req: {
     newDisplayName?: string;
-    newProfilePicture?: string;
+    profilePictureBuffer?: Buffer;
   },
 ) => {
   if (!username) {
@@ -399,9 +402,27 @@ export const updateUserProfileByUsername = async (
 
   if (req.newDisplayName !== undefined)
     updates["display_name"] = req.newDisplayName;
-  if (req.newProfilePicture !== undefined)
-    updates["profile_picture"] = req.newProfilePicture;
 
+  if (req.profilePictureBuffer) {
+    if (existingUser.profile_picture) {
+      const oldPublicId = extractPublicIdFromUrl(existingUser.profile_picture);
+      if (oldPublicId) {
+        try {
+          await deleteImageFromCloudinary(oldPublicId);
+        } catch (error) {
+          console.warn("Failed to delete old profile picture:", error);
+        }
+      }
+    }
+
+    const uploadResult = await uploadImageToCloudinary(
+      req.profilePictureBuffer,
+      "profile-pictures",
+      `user-${existingUser.id}-${Date.now()}`,
+    );
+
+    updates["profile_picture"] = uploadResult.secureUrl;
+  }
   updateFieldCheck(updates);
 
   updates["done_by"] = username;

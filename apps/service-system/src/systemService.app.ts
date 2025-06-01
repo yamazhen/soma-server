@@ -1,11 +1,14 @@
 import express from "express";
 import cors from "cors";
 import {
-	errorHandler,
-	gatewayAuthMiddleware,
-	notFoundHandler,
+  configureCloudinary,
+  errorHandler,
+  gatewayAuthMiddleware,
+  notFoundHandler,
 } from "@soma-ms/shared";
 import { setupRoutes } from "./routes/systemRoutesExport";
+
+configureCloudinary();
 
 const app = express();
 

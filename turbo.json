@@ -1,57 +1,60 @@
 {
-	"$schema": "https://turbo.build/schema.json",
-	"globalEnv": [
-		"NODE_ENV",
-		"PGHOST",
-		"PGPORT",
-		"PGUSER",
-		"PGPASSWORD",
-		"PGDATABASE",
-		"INIT_SCHEMA",
-		"API_GATEWAY_PORT",
-		"SERVICE_SYSTEM_PORT",
-		"SERVICE_STUDY_PORT",
-		"SERVICE_AI_PORT",
-		"GATEWAY_API_KEY",
-		"SERVICE_STUDY_URL",
-		"SERVICE_AI_URL",
-		"SERVICE_SYSTEM_URL",
-		"EMAIL_HOST",
-		"EMAIL_PORT",
-		"EMAIL_SECURE",
-		"EMAIL_USER",
-		"EMAIL_PASSWORD",
-		"JWT_SECRET",
-		"JWT_REFRESH_SECRET",
-		"GOOGLE_CLIENT_ID",
-		"GOOGLE_CLIENT_SECRET",
-		"GOOGLE_REDIRECT_URI",
-		"SESSION_SECRET",
-		"MEMCACHE_URL",
-		"GEMINI_API_KEY"
-	],
-	"tasks": {
-		"build": {
-			"dependsOn": ["^build"],
-			"outputs": ["dist/**", ".turbo/**"]
-		},
-		"lint": {
-			"dependsOn": ["^build"]
-		},
-		"dev": {
-			"cache": false,
-			"persistent": true,
-			"dependsOn": ["^build"]
-		},
-		"start": {
-			"dependsOn": ["build"]
-		},
-		"test": {
-			"dependsOn": ["build"],
-			"outputs": ["coverage/**"]
-		},
-		"clean": {
-			"cache": false
-		}
-	}
+  "$schema": "https://turbo.build/schema.json",
+  "globalEnv": [
+    "NODE_ENV",
+    "PGHOST",
+    "PGPORT",
+    "PGUSER",
+    "PGPASSWORD",
+    "PGDATABASE",
+    "INIT_SCHEMA",
+    "API_GATEWAY_PORT",
+    "SERVICE_SYSTEM_PORT",
+    "SERVICE_STUDY_PORT",
+    "SERVICE_AI_PORT",
+    "GATEWAY_API_KEY",
+    "SERVICE_STUDY_URL",
+    "SERVICE_AI_URL",
+    "SERVICE_SYSTEM_URL",
+    "EMAIL_HOST",
+    "EMAIL_PORT",
+    "EMAIL_SECURE",
+    "EMAIL_USER",
+    "EMAIL_PASSWORD",
+    "JWT_SECRET",
+    "JWT_REFRESH_SECRET",
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "GOOGLE_REDIRECT_URI",
+    "SESSION_SECRET",
+    "MEMCACHE_URL",
+    "GEMINI_API_KEY",
+    "CLOUDINARY_CLOUD_NAME",
+    "CLOUDINARY_API_KEY",
+    "CLOUDINARY_API_SECRET"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".turbo/**"]
+    },
+    "lint": {
+      "dependsOn": ["^build"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
+    },
+    "start": {
+      "dependsOn": ["build"]
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "outputs": ["coverage/**"]
+    },
+    "clean": {
+      "cache": false
+    }
+  }
 }

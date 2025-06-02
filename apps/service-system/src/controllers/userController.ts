@@ -271,20 +271,12 @@ export const createUser = async (req: {
   return newUser;
 };
 
-const findUserByUsernameOrEmail = async (identifier: string) => {
-  const result: QueryResult = await Database.query(
-    "SELECT * FROM users WHERE username = $1 OR email = $1 LIMIT 1",
-    [identifier],
-  );
-  return result.rows[0] || null;
-};
-
-export const changeEmailByUsernameOrEmail = async (req: {
+export const changeEmailByUsername = async (req: {
   newEmail: string;
-  identifier: string;
+  username: string;
 }) => {
-  const { identifier, newEmail } = req;
-  if (!identifier || identifier === "") {
+  const { username, newEmail } = req;
+  if (!username || username === "") {
     throw new BadRequestError("USERNAME_OR_EMAIL_REQUIRED");
   }
 
@@ -293,7 +285,7 @@ export const changeEmailByUsernameOrEmail = async (req: {
     throw new BadRequestError("EMAIL_ALREADY_SENT");
   }
 
-  const existingUser = await findUserByUsernameOrEmail(identifier);
+  const existingUser = await findUserByUsername(username);
   if (!existingUser) {
     throw new NotFoundError("USER_NOT_FOUND");
   }
@@ -315,6 +307,88 @@ export const changeEmailByUsernameOrEmail = async (req: {
     emailService.sendEmail({ to: req.newEmail, ...emailContent });
 
     await CacheService.setRecentEmailSent(newEmail, 60);
+  } catch {
+    throw new InternalServerError("EMAIL_SENDING_FAILED");
+  }
+};
+
+export const resendLoginEmail = async (req: { email: string }) => {
+  const { email } = req;
+  if (!email) {
+    throw new BadRequestError("EMAIL_REQUIRED");
+  }
+
+  const existingUser = await findUserByEmail(email);
+  if (!existingUser) {
+    throw new NotFoundError("USER_NOT_FOUND");
+  }
+
+  const recentEmailSent = await CacheService.getRecentEmailSent(email);
+  if (recentEmailSent) {
+    throw new BadRequestError("EMAIL_ALREADY_SENT");
+  }
+
+  const emailCount = await CacheService.getEmailSendCount(email);
+  if (emailCount >= 3) {
+    throw new BadRequestError("EMAIL_RATE_LIMIT_EXCEEDED");
+  }
+
+  const loginCode = generateLoginCode();
+  await CacheService.setLoginVerificationCode(email, loginCode);
+
+  try {
+    const emailContent = createLoginVerificationTemplate(
+      existingUser.username,
+      loginCode,
+    );
+
+    await emailService.sendEmail({
+      to: email,
+      ...emailContent,
+    });
+  } catch {
+    throw new InternalServerError("EMAIL_SENDING_FAILED");
+  }
+};
+
+export const resendEmailVerification = async (req: { email: string }) => {
+  const { email } = req;
+  if (!email) {
+    throw new BadRequestError("EMAIL_REQUIRED");
+  }
+
+  const existingUser = await findUserByEmail(email);
+  if (!existingUser) {
+    throw new NotFoundError("USER_NOT_FOUND");
+  }
+
+  const recentEmailSent = await CacheService.getRecentEmailSent(email);
+  if (recentEmailSent) {
+    throw new BadRequestError("EMAIL_ALREADY_SENT");
+  }
+
+  const emailCount = await CacheService.getEmailSendCount(email);
+  if (emailCount >= 3) {
+    throw new BadRequestError("EMAIL_RATE_LIMIT_EXCEEDED");
+  }
+
+  const isVerified = existingUser.is_verified;
+  if (isVerified) {
+    throw new BadRequestError("USER_ALREADY_VERIFIED");
+  }
+
+  const verificationCode = generateVerificationCode();
+  await CacheService.setVerificationCode(email, verificationCode);
+  try {
+    const emailContent = createVerificationEmailTemplate(
+      existingUser.username,
+      verificationCode,
+    );
+
+    await emailService.sendEmail({
+      to: email,
+      ...emailContent,
+    });
   } catch {
     throw new InternalServerError("EMAIL_SENDING_FAILED");
   }
@@ -636,16 +710,16 @@ const loginWithoutPassword = async (user: User, userAgent: string) => {
 };
 
 export const initiateLogin = async (
-  req: { usernameOrEmail: string; password: string },
+  req: { email: string; password: string },
   headers: { userAgent?: string; ip?: string },
 ) => {
-  const { usernameOrEmail, password } = req;
+  const { email, password } = req;
 
-  if (!usernameOrEmail || !password) {
-    if (!usernameOrEmail && !password) {
+  if (!email || !password) {
+    if (!email && !password) {
       throw new BadRequestError("USERNAME_OR_EMAIL_AND_PASSWORD_REQUIRED");
     }
-    if (!usernameOrEmail) {
+    if (!email) {
       throw new BadRequestError("USERNAME_OR_EMAIL_REQUIRED");
     }
     if (!password) {
@@ -653,19 +727,19 @@ export const initiateLogin = async (
     }
   }
 
-  const loginAttempts = await CacheService.getLoginAttempts(usernameOrEmail);
+  const loginAttempts = await CacheService.getLoginAttempts(email);
   if (loginAttempts >= 5) {
     throw new ForbiddenError("TOO_MANY_LOGIN_ATTEMPTS");
   }
 
   const result: QueryResult<User> = await Database.query(
-    "SELECT * FROM users WHERE username = $1 OR email = $1",
-    [usernameOrEmail],
+    "SELECT * FROM users WHERE email = $1",
+    [email],
   );
 
   const user = result.rows[0] as User | undefined;
   if (!user) {
-    await CacheService.incrementLoginAttempts(usernameOrEmail);
+    await CacheService.incrementLoginAttempts(email);
     throw new UnauthorizedError("INVALID_USERNAME_OR_EMAIL");
   }
 
@@ -679,7 +753,7 @@ export const initiateLogin = async (
 
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid) {
-    await CacheService.incrementLoginAttempts(usernameOrEmail);
+    await CacheService.incrementLoginAttempts(email);
     throw new UnauthorizedError("INVALID_PASSWORD");
   }
 
@@ -690,7 +764,7 @@ export const initiateLogin = async (
 
   const deviceTrusted = await isDeviceTrusted(user.id, deviceFingerprint);
   if (deviceTrusted) {
-    await CacheService.resetLoginAttempts(usernameOrEmail);
+    await CacheService.resetLoginAttempts(email);
     return await completeLogin(user, headers.userAgent || "Unknown Device");
   }
 
@@ -798,102 +872,6 @@ const completeLogin = async (user: User, userAgent: string) => {
 
   return {
     requiresVerification: false,
-    user: {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      display_name: user.display_name,
-      profile_picture: user.profile_picture,
-      last_login: user.last_login,
-    },
-    tokens: {
-      accessToken,
-      refreshToken,
-      expiresIn: 900,
-    },
-  };
-};
-
-export const loginUser = async (
-  req: {
-    usernameOrEmail: string;
-    password: string;
-  },
-  headers: { userAgent?: string | undefined },
-) => {
-  const { usernameOrEmail, password } = req;
-
-  if (!usernameOrEmail || !password) {
-    if (!usernameOrEmail && !password) {
-      throw new BadRequestError("USERNAME_OR_EMAIL_AND_PASSWORD_REQUIRED");
-    }
-    if (!usernameOrEmail) {
-      throw new BadRequestError("USERNAME_OR_EMAIL_REQUIRED");
-    }
-    if (!password) {
-      throw new BadRequestError("PASSWORD_REQUIRED");
-    }
-  }
-
-  const loginAttempts = await CacheService.getLoginAttempts(usernameOrEmail);
-  if (loginAttempts >= 5) {
-    throw new ForbiddenError("TOO_MANY_LOGIN_ATTEMPTS");
-  }
-
-  const result: QueryResult<User> = await Database.query(
-    "SELECT * FROM users WHERE username = $1 OR email = $1",
-    [usernameOrEmail],
-  );
-  const user = result.rows[0] as User | undefined;
-  if (!user) {
-    await CacheService.incrementLoginAttempts(usernameOrEmail);
-    throw new UnauthorizedError("INVALID_USERNAME_OR_EMAIL");
-  }
-
-  if (!user.is_verified) {
-    throw new ForbiddenError("VERIFY");
-  }
-
-  if (!user.is_active) {
-    throw new ForbiddenError("DISABLED");
-  }
-
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) {
-    await CacheService.incrementLoginAttempts(usernameOrEmail);
-    throw new UnauthorizedError("INVALID_PASSWORD");
-  }
-
-  await CacheService.resetLoginAttempts(usernameOrEmail);
-
-  const accessToken = generateAccessToken(user.id, user.username, user.email);
-  const refreshToken = generateRefreshToken(user.id);
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + 7);
-
-  await Database.query(
-    "INSERT INTO refresh_tokens (user_id, token, expires_at, device_info) " +
-      "VALUES ($1, $2, $3, $4)",
-    [user.id, refreshToken, expiresAt, headers.userAgent || "Unknown Device"],
-  );
-
-  await CacheService.setRefreshTokenData(
-    refreshToken,
-    {
-      user_id: user.id,
-      username: user.username,
-      email: user.email,
-      expires_at: expiresAt,
-      device_info: headers.userAgent || "Unknown Device",
-    },
-    expiresAt,
-  );
-
-  await Database.query("UPDATE users SET last_login = NOW() WHERE id = $1", [
-    user.id,
-  ]);
-
-  return {
     user: {
       id: user.id,
       username: user.username,

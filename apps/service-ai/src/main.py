@@ -34,7 +34,7 @@ def generateDeckFromNote(request: GenerateFromNote) -> DeckResponse:
 
 if __name__ == "__main__":
     port = int(os.environ.get("SERVICE_AI_PORT", 3002))
-    host = os.environ.get("SERVICE_AI_URL", "localhost")
+    host = os.environ.get("SERVICE_AI_URL", "0.0.0.0")
     is_dev = NODE_ENV == "development"
 
     if is_dev:

@@ -16,7 +16,7 @@ export const serverEnv = {
   NODE_ENV: getEnv("NODE_ENV"),
 
   // ports for the services
-  API_GATEWAY_PORT: getEnv("API_GATEWAY_PORT", "3000"),
+  API_GATEWAY_PORT: getEnv("API_GATEWAY_PORT", "80"),
   SERVICE_SYSTEM_PORT: getEnv("SERVICE_SYSTEM_PORT", "3001"),
   SERVICE_AI_PORT: getEnv("SERVICE_AI_PORT", "3002"),
   SERVICE_STUDY_PORT: getEnv("SERVICE_STUDY_PORT", "3003"),

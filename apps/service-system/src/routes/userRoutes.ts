@@ -1,15 +1,16 @@
 import { Router } from "express";
 import {
-  changeEmailByUsernameOrEmail,
+  changeEmailByUsername,
   createUser,
   findAllUsers,
   findUserById,
   findUserByUsername,
   initiateLogin,
-  loginUser,
   logoutAllDevices,
   logoutUser,
   refreshAccessToken,
+  resendEmailVerification,
+  resendLoginEmail,
   updateUserProfileByUsername,
   verifyEmailChange,
   verifyLogin,
@@ -52,6 +53,7 @@ router.post(
   ),
 );
 
+// user login verification (completion)
 router.post(
   "/api/v2/users/login/verify",
   handleRoute(async (req) => await verifyLogin(req.body), {
@@ -76,6 +78,24 @@ router.post(
   ),
 );
 
+// resend email verification
+router.post(
+  "/api/v1/users/verify/register/resend",
+  handleRoute(async (req) => await resendEmailVerification(req.body), {
+    message: "EMAIL_VERIFICATION_RESENT",
+    statusCode: 201,
+  }),
+);
+
+// resend login verification code
+router.post(
+  "/api/v1/users/verify/login/resend",
+  handleRoute(async (req) => await resendLoginEmail(req.body), {
+    message: "LOGIN_VERIFICATION_CODE_RESENT",
+    statusCode: 201,
+  }),
+);
+
 // user creation (registration)
 router.post(
   "/api/v1/users",
@@ -83,21 +103,6 @@ router.post(
     message: "User created successfully",
     statusCode: 201,
   }),
-);
-
-// user login
-router.post(
-  "/api/v1/users/login",
-  handleRoute(
-    async (req) =>
-      await loginUser(req.body, {
-        userAgent: req.headers["user-agent"],
-      }),
-    {
-      message: "User logged in successfully",
-      statusCode: 201,
-    },
-  ),
 );
 
 // refresh access token (for security)
@@ -181,9 +186,8 @@ router.get(
 router.post(
   "/api/v1/users/change-email",
   authenticateToken,
-  handleRoute(async (req) => await changeEmailByUsernameOrEmail(req.body), {
-    message: (_res, req) =>
-      `Email change requested for ${req.params["originalEmail"]}`,
+  handleRoute(async (req) => await changeEmailByUsername(req.body), {
+    message: (_res, req) => `Email change requested for ${req.params["email"]}`,
     statusCode: 201,
   }),
 );

@@ -32,11 +32,8 @@ export const serverEnv = {
   PGPORT: getEnv("PGPORT"),
   INIT_SCHEMA: getEnv("INIT_SCHEMA"),
 
-  EMAIL_HOST: getEnv("EMAIL_HOST"),
-  EMAIL_PORT: getEnv("EMAIL_PORT", "587"),
-  EMAIL_SECURE: getEnv("EMAIL_SECURE", "false"),
-  EMAIL_USER: getEnv("EMAIL_USER"),
-  EMAIL_PASSWORD: getEnv("EMAIL_PASSWORD"),
+  RESEND_API_KEY: getEnv("RESEND_API_KEY"),
+  EMAIL_FROM: getEnv("EMAIL_FROM", "noreply@zhen.software"),
 
   JWT_SECRET: getEnv("JWT_SECRET"),
   JWT_REFRESH_SECRET: getEnv("JWT_REFRESH_SECRET"),

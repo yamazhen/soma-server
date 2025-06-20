@@ -3,7 +3,7 @@ import type {
   RouteHandlerFunction,
   RouteOptions,
   SuccessResponseOptions,
-} from "./types/typesExport";
+} from "./types/typesExport.js";
 import path from "node:path";
 
 export class ErrorTypes extends Error {
@@ -187,4 +187,11 @@ export const getClientInfo = (
 
   const userAgent = req.headers["user-agent"] || "unknown";
   return { ip, userAgent };
+};
+
+export const extractErrorMessage = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return String(error);
 };

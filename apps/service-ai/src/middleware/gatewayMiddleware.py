@@ -1,6 +1,7 @@
 import os
 from typing import Annotated
-from fastapi import HTTPException, Header
+
+from fastapi import Header, HTTPException
 
 GATEWAY_API_KEY = os.environ.get("GATEWAY_API_KEY")
 

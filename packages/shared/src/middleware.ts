@@ -10,8 +10,8 @@ import {
   ForbiddenError,
   NotFoundError,
   UnauthorizedError,
-} from "./utils";
-import { serverEnv } from "./config/env";
+} from "./utils.js";
+import { serverEnv } from "./config/env.js";
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
   if (serverEnv.NODE_ENV === "development")

@@ -14,8 +14,8 @@ import {
   COMPLETE_LOGIN_QUERY,
   generateAccessToken,
   generateRefreshToken,
-} from "../controllers/userController";
-import { CacheService } from "./cacheService";
+} from "../controllers/userController.js";
+import { CacheService } from "./cacheService.js";
 
 export class AuthService {
   private googleClient: OAuth2Client;

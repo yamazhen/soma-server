@@ -1,7 +1,6 @@
 FROM python:3.13-slim AS builder
 WORKDIR /app
 
-
 RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
@@ -13,9 +12,6 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y \
-    && rm -rf /var/lib/apt/lists/*
-
 COPY --from=builder /root/.local /root/.local
 
 COPY apps/service-ai/ ./
@@ -24,5 +20,5 @@ ENV PATH=/root/.local/bin:$PATH
 
 EXPOSE 3002
 
-CMD ["python3", "main.py"]
-
+# Fix: main.py is in the src/ directory
+CMD ["python3", "src/main.py"]

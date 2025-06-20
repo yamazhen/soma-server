@@ -1,9 +1,9 @@
 import fastifyCors from "@fastify/cors";
 import type { FastifyInstance } from "fastify";
 import Fastify from "fastify";
-import { configureErrorHandling } from "./apiErrorHandling";
-import { registerRoutes } from "./apiRoutes";
-import { registerProxies } from "./apiProxies";
+import { configureErrorHandling } from "./apiErrorHandling.js";
+import { registerRoutes } from "./apiRoutes.js";
+import { registerProxies } from "./apiProxies.js";
 import { serverEnv } from "@soma-ms/shared";
 
 export class ApiGateway {

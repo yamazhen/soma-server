@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from model.QuizTypes import Quiz
 from model.DeckTypes import Deck
+from model.NoteTypes import MarkdownNote
+from model.QuizTypes import Quiz
+from pydantic import BaseModel
 
 
 class QuizResponse(BaseModel):
@@ -8,3 +9,6 @@ class QuizResponse(BaseModel):
 
 class DeckResponse(BaseModel):
     deck: Deck
+
+class NoteResponse(BaseModel):
+    note: MarkdownNote

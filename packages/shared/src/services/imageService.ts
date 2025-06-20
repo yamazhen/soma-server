@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
-import { serverEnv } from "../config/env";
+import { serverEnv } from "../config/env.js";
 import multer from "multer";
 import sharp from "sharp";
 

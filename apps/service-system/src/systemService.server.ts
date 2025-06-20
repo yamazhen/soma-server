@@ -1,18 +1,18 @@
 import { Database, initSchema, serverEnv } from "@soma-ms/shared";
-import { app } from "./systemService.app";
-import { schemas } from "./models/systemModelsExport";
-import { emailService } from "./services/emailService";
-import { stateStore } from "./services/stateService";
+import { app } from "./systemService.app.js";
+import { schemas } from "./models/systemModelsExport.js";
+import { emailService } from "./services/emailService.js";
+import { stateStore } from "./services/stateService.js";
 
 export async function startServer() {
-	await Database.init("soma-system");
-	await initSchema(schemas);
-	await emailService.verifyConnection();
-	const PORT = Number.parseInt(serverEnv.SERVICE_SYSTEM_PORT);
+  await Database.init("soma-system");
+  await initSchema(schemas);
+  await emailService.verifyConnection();
+  const PORT = Number.parseInt(serverEnv.SERVICE_SYSTEM_PORT);
 
-	stateStore.setupCleanup();
+  stateStore.setupCleanup();
 
-	app.listen(PORT, () => {
-		console.log(`System Service running on port ${PORT}`);
-	});
+  app.listen(PORT, () => {
+    console.log(`System Service running on port ${PORT}`);
+  });
 }

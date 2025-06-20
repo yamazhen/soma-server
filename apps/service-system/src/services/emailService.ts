@@ -1,47 +1,64 @@
-import type { EmailConfig, EmailOptions } from "@soma-ms/shared";
 import {
-  createTransport,
-  type SendMailOptions,
-  type Transporter,
-} from "nodemailer";
+  extractErrorMessage,
+  serverEnv,
+  type EmailOptions,
+} from "@soma-ms/shared";
+import { CreateEmailOptions, Resend } from "resend";
 
 class EmailService {
-  private transporter: Transporter;
+  private resend: Resend;
 
   constructor() {
-    const config: EmailConfig = {
-      host: process.env["EMAIL_HOST"] || "smtp.example.com",
-      port: parseInt(process.env["EMAIL_PORT"] || "587"),
-      secure: process.env["EMAIL_SECURE"] === "true",
-      auth: {
-        user: process.env["EMAIL_USER"] || "",
-        pass: process.env["EMAIL_PASSWORD"] || "",
-      },
-    };
-    this.transporter = createTransport(config);
+    this.resend = new Resend(serverEnv.RESEND_API_KEY);
   }
 
   async sendEmail(options: EmailOptions): Promise<void> {
-    const mailOptions: SendMailOptions = {
-      from: process.env["EMAIL_USER"] || "",
-      ...options,
-    };
-
     try {
-      await this.transporter.sendMail(mailOptions);
+      if (!options.html && !options.text) {
+        throw new Error("Email must have either html or text content");
+      }
+
+      let emailData: CreateEmailOptions;
+
+      if (options.html) {
+        emailData = {
+          from: serverEnv.EMAIL_FROM,
+          to: options.to,
+          subject: options.subject,
+          html: options.html,
+        };
+
+        if (options.text) emailData.text = options.text;
+        if (options.cc) emailData.cc = options.cc;
+        if (options.bcc) emailData.bcc = options.bcc;
+      } else if (options.text) {
+        emailData = {
+          from: serverEnv.EMAIL_FROM,
+          to: options.to,
+          subject: options.subject,
+          text: options.text,
+        };
+
+        if (options.cc) emailData.cc = options.cc;
+        if (options.bcc) emailData.bcc = options.bcc;
+      } else {
+        throw new Error("Email must have either html or text content");
+      }
+
+      await this.resend.emails.send(emailData);
     } catch (e) {
-      console.error("Error sending email:", e);
-      throw new Error("Failed to send email");
+      throw new Error("Failed to send email: " + extractErrorMessage(e));
     }
   }
 
   async verifyConnection(): Promise<boolean> {
     try {
-      await this.transporter.verify();
-      console.log("Email service is ready to send messages");
+      if (!serverEnv.RESEND_API_KEY) {
+        return false;
+      }
       return true;
     } catch (e) {
-      console.error("Email service verificatin failed:", e);
+      console.error("Email service verification failed:", e);
       return false;
     }
   }

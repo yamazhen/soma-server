@@ -1,2 +1,2 @@
-export * from "./infoTypes";
-export * from "./authenticationTypes";
+export * from "./infoTypes.js";
+export * from "./authenticationTypes.js";

@@ -1,33 +1,33 @@
 {
-	"$schema": "https://json.schemastore.org/tsconfig",
-	"display": "Default Base Configuration",
-	"compilerOptions": {
-		"target": "ES2022",
-		"lib": ["ES2022"],
-		"module": "ESNext",
-		"moduleResolution": "bundler",
-		"allowImportingTsExtensions": false,
-		"resolveJsonModule": true,
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Default Base Configuration",
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+    "resolveJsonModule": true,
 
-		"declaration": true,
-		"declarationMap": true,
-		"sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
 
-		"incremental": true,
-		"skipLibCheck": true,
+    "incremental": true,
+    "skipLibCheck": true,
 
-		"strict": true,
-		"noUncheckedIndexedAccess": true,
-		"noImplicitOverride": true,
-		"exactOptionalPropertyTypes": true,
-		"noFallthroughCasesInSwitch": true,
-		"noImplicitReturns": true,
-		"noPropertyAccessFromIndexSignature": true,
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "exactOptionalPropertyTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
 
-		"esModuleInterop": true,
-		"allowSyntheticDefaultImports": true,
-		"isolatedModules": true,
-		"forceConsistentCasingInFileNames": true
-	},
-	"exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
 }

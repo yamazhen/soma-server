@@ -15,7 +15,7 @@ import {
   verifyEmailChange,
   verifyLogin,
   verifyUser,
-} from "../controllers/userController";
+} from "../controllers/userController.js";
 import {
   authenticateToken,
   BadRequestError,
@@ -133,6 +133,7 @@ router.get(
         username: user.username,
         email: user.email,
         display_name: user.display_name,
+        profile_picture: user.profile_picture,
       };
     },
     {
@@ -206,7 +207,7 @@ router.post(
 router.post(
   "/api/v1/users/:username",
   authenticateToken,
-  profilePictureUpload.single("profilePicture"),
+  profilePictureUpload.single("file"),
   handleRoute(
     async (req) => {
       const updateData: any = req.body;

@@ -6,7 +6,7 @@ import {
   gatewayAuthMiddleware,
   notFoundHandler,
 } from "@soma-ms/shared";
-import { setupRoutes } from "./routes/systemRoutesExport";
+import { setupRoutes } from "./routes/systemRoutesExport.js";
 
 configureCloudinary();
 

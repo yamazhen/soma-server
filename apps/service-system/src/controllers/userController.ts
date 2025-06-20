@@ -24,11 +24,11 @@ import {
   createEmailChangeVerificationTemplate,
   createLoginVerificationTemplate,
   createVerificationEmailTemplate,
-} from "../utils/emailTemplates";
-import { emailService } from "../services/emailService";
+} from "../utils/emailTemplates.js";
+import { emailService } from "../services/emailService.js";
 import jwt from "jsonwebtoken";
-import { TOKEN_CONSTANTS } from "../constants/tokenConstants";
-import { CacheService } from "../services/cacheService";
+import { TOKEN_CONSTANTS } from "../constants/tokenConstants.js";
+import { CacheService } from "../services/cacheService.js";
 
 interface RefreshTokenWithUser extends RefreshToken {
   username: string;

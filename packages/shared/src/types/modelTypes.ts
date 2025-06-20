@@ -45,27 +45,3 @@ export interface OAuthProvider {
   provider_id: string;
   create_date: Date;
 }
-
-export interface EmailConfig {
-  host: string;
-  port: number;
-  secure: boolean;
-  auth: {
-    user: string;
-    pass: string;
-  };
-}
-
-export interface EmailOptions {
-  to: string | string[];
-  subject: string;
-  text?: string;
-  html?: string;
-  cc?: string | string[];
-  bcc?: string | string[];
-  attachments?: Array<{
-    filename: string;
-    content?: string | Buffer;
-    path?: string;
-  }>;
-}

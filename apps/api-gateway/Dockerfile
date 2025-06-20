@@ -20,11 +20,10 @@ COPY --from=builder /app/package-lock.json ./
 COPY --from=builder /app/apps/api-gateway/package*.json ./
 COPY --from=builder /app/apps/api-gateway/dist ./dist
 
-RUN mkdir -p ./node_modules/@soma-ms/shared
-COPY --from=builder /app/packages/shared/dist ./node_modules/@soma-ms/shared/dist
-COPY --from=builder /app/packages/shared/package.json ./node_modules/@soma-ms/shared/
-
 RUN npm ci --omit=dev
+
+RUN rm -rf ./node_modules/@soma-ms/shared
+COPY --from=builder /app/packages/shared ./node_modules/@soma-ms/shared/
 
 EXPOSE 80
 CMD ["npm", "start"]

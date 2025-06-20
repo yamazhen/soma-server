@@ -1,4 +1,4 @@
-import type { User } from "../modelTypes";
+import type { User } from "../modelTypes.js";
 
 export interface JWTPayload {
   id: number;

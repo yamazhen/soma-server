@@ -8,9 +8,9 @@ import {
 } from "@soma-ms/shared";
 import fs from "node:fs";
 import crypto from "node:crypto";
-import { AuthService } from "../services/authService";
+import { AuthService } from "../services/authService.js";
 import { OAuth2Client } from "google-auth-library";
-import { stateStore } from "../services/stateService";
+import { stateStore } from "../services/stateService.js";
 
 const router = express.Router();
 const authService = new AuthService();

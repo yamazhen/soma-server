@@ -99,15 +99,6 @@ export const generateAccessToken = (
   );
 };
 
-export const generateLoginCode = () => {
-  return randomInt(1000, 9999).toString();
-};
-
-const generateDeviceFingerprint = (userAgent: string, ip?: string) => {
-  const baseString = `${userAgent}-${ip || "unknown"}`;
-  return Buffer.from(baseString).toString("base64").slice(0, 50);
-};
-
 export const generateRefreshToken = (userId: number) => {
   return jwt.sign(
     {
@@ -118,6 +109,15 @@ export const generateRefreshToken = (userId: number) => {
     serverEnv.JWT_REFRESH_SECRET,
     { expiresIn: TOKEN_CONSTANTS.REFRESH_TOKEN_EXPIRY },
   );
+};
+
+export const generateLoginCode = () => {
+  return randomInt(1000, 9999).toString();
+};
+
+const generateDeviceFingerprint = (userAgent: string, ip?: string) => {
+  const baseString = `${userAgent}-${ip || "unknown"}`;
+  return Buffer.from(baseString).toString("base64").slice(0, 50);
 };
 
 const isDeviceTrusted = async (userId: number, deviceFingerprint: string) => {

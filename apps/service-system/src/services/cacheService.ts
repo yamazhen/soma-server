@@ -117,14 +117,6 @@ class CacheServiceClass {
     await Promise.allSettled(promises);
   }
 
-  async getUserByEmail(email: string): Promise<User | null> {
-    return this.get(`user:email:${email}`);
-  }
-
-  async getUserByUsername(username: string): Promise<User | null> {
-    return this.get(`user:username:${username}`);
-  }
-
   async invalidateUser(user: User): Promise<void> {
     const promises = [
       this.delete(`user:id:${user.id}`),
@@ -133,6 +125,14 @@ class CacheServiceClass {
       this.delete(`session:${user.id}`),
     ];
     await Promise.allSettled(promises);
+  }
+
+  async getUserByEmail(email: string): Promise<User | null> {
+    return this.get(`user:email:${email}`);
+  }
+
+  async getUserByUsername(username: string): Promise<User | null> {
+    return this.get(`user:username:${username}`);
   }
 
   async bulkInvalidateUsers(userIds: number[]): Promise<void> {

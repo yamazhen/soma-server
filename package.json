@@ -8,8 +8,8 @@
 	],
 	"packageManager": "npm@10.9.2",
 	"scripts": {
-		"build": "dotenv -e ~/.important/soma.env -- turbo run build",
-		"dev": "dotenv -e ~/.important/soma.env -- turbo run dev",
+		"build": "turbo run build",
+		"dev": "dotenv -e .\\.env -- turbo run dev",
 		"start": "turbo run start",
 		"lint": "turbo run lint",
 		"test": "turbo run test",

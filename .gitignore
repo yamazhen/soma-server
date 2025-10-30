@@ -5,3 +5,4 @@ dist/
 *.tsbuildinfo
 .venv
 __pycache__
+.cache/

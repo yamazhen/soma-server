@@ -20,7 +20,7 @@ class FileProcessingError(Exception):
     pass
 
 def generateContent(prompt: str):
-    return client.models.generate_content(model="gemini-1.5-flash", contents=prompt).text
+    return client.models.generate_content(model="gemini-2.5-flash", contents=prompt).text
 
 def generateQuiz(source: str, num_questions: int):
     prompt = f"""Analyze the following markdown note content and create a comprehensive quiz based on key concepts, facts, and information presented.
@@ -34,7 +34,7 @@ def generateQuiz(source: str, num_questions: int):
     """
 
     response = client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-2.5-flash",
         contents=prompt,
         config={
             "response_mime_type": "application/json",
@@ -55,7 +55,7 @@ def generateDeck(source: str, num_cards: int):
     """
 
     response = client.models.generate_content(
-        model="gemini-1.5-flash",
+        model="gemini-2.5-flash",
         contents=prompt,
         config={
             "response_mime_type": "application/json",
@@ -74,7 +74,7 @@ async def generateNoteFromFile(file: UploadFile = File(...)):
         text_content = "".join(page.extract_text() for page in pdf_reader.pages)
 
         response = client.models.generate_content(
-            model="gemini-1.5-flash",
+            model="gemini-2.5-flash",
             contents=[base_prompt, text_content],
             config={
                 "response_mime_type": "application/json",
@@ -86,7 +86,7 @@ async def generateNoteFromFile(file: UploadFile = File(...)):
         image_data = await file.read()
         image = Image.open(io.BytesIO(image_data))
         response = client.models.generate_content(
-                model="gemini-1.5-flash",
+                model="gemini-2.5-flash",
                 contents=[base_prompt, image],
                 config={
                 "response_mime_type": "application/json",

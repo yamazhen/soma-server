@@ -1,9 +1,17 @@
 import {
   extractErrorMessage,
   serverEnv,
-  type EmailOptions,
 } from "@soma-ms/shared";
 import { CreateEmailOptions, Resend } from "resend";
+
+interface EmailOptions {
+  to: string | string[];
+  subject: string;
+  html?: string;
+  text?: string;
+  cc?: string | string[];
+  bcc?: string | string[];
+}
 
 class EmailService {
   private resend: Resend;

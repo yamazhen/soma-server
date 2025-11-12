@@ -1,11 +1,8 @@
-import asyncio
 import logging
 import os
-from concurrent.futures import ThreadPoolExecutor
 from contextlib import asynccontextmanager
 
 import uvicorn
-from ai.contentGenerator import get_model, generate_deck_llama, generate_quiz_llama
 from ai.geminiContentGenerator import (
     FileProcessingError,
     UnsupportedFileTypeError,
@@ -23,28 +20,13 @@ from utils.uptime import format_uptime, get_uptime_seconds
 NODE_ENV = os.environ.get("NODE_ENV")
 
 logger = logging.getLogger(__name__)
-model_available = False
-executor = ThreadPoolExecutor(max_workers=2)
 
 
 @asynccontextmanager
 async def lifespan(_):
-    global model_available
-
-    # Disabled local Llama model for weak VPS - using Gemini fallback instead
-    # try:
-    #     get_model()
-    #     model_available = True
-    # except Exception as e:
-    #     logger.error(f"Failed to load AI model: {e}")
-    #     model_available = False
-
-    logger.info("Local Llama model disabled - using Gemini API only")
-    model_available = False
-
+    logger.info("Service AI starting - using Gemini API only")
     yield
-
-    logger.info("Shutting down AI model...")
+    logger.info("Service AI shutting down")
 
 
 app = FastAPI(dependencies=[Depends(verify_gateway_key)], lifespan=lifespan)
